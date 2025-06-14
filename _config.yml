@@ -1,1 +1,6 @@
 theme: minima
+# 修改 _config.yml 添加：
+include:
+  - "*.html"  # 强制包含HTML文件
+exclude:      # 排除Jekyll处理
+  - index.md  # 或者您不想处理的MD文件
