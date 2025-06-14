@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CNBeta 最新内容</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .article-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .article-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .article-title a {
+            color: #333;
+            text-decoration: none;
+        }
+        .article-title a:hover {
+            text-decoration: underline;
+        }
+        .article-summary {
+            color: #666;
+            line-height: 1.6;
+        }
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CNBeta 最新内容</h1>
+        <div id="articles" class="articles">
+            <div class="loading">加载中...</div>
+        </div>
+    </div>
+    <script>
+        async function fetchCNBeta() {
+            try {
+                const response = await fetch('https://cnbeta.com/rss');
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, "text/xml");
+                const items = xmlDoc.querySelectorAll('item');
+                const articlesDiv = document.getElementById('articles');
+                articlesDiv.innerHTML = '';
+                items.forEach(item => {
+                    const title = item.querySelector('title').textContent;
+                    const link = item.querySelector('link').textContent;
+                    const description = item.querySelector('description').textContent;
+                    const articleCard = document.createElement('div');
+                    articleCard.className = 'article-card';
+                    articleCard.innerHTML = `
+                        <div class="article-title">
+                            <a href="${link}" target="_blank">${title}</a>
+                        </div>
+                        <div class="article-summary">${description}</div>
+                    `;
+                    articlesDiv.appendChild(articleCard);
+                });
+            } catch (error) {
+                console.error('获取 CNBeta 内容失败:', error);
+            }
+        }
+        // 首次加载
+        fetchCNBeta();
+        // 每 30 分钟更新一次
+        setInterval(fetchCNBeta, 30 * 60 * 1000);
+    </script>
+</body>
+</html>
